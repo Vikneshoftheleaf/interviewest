@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://interviewest.pages.dev/sitemap.xml
+Sitemap: https://interviewest.vikneshoftheleaf.workers.dev/sitemap.xml
