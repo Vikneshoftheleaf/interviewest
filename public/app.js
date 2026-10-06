@@ -132,7 +132,7 @@ function updateStatus(state, customText) {
     textEl.textContent = customText || "Live Call";
   } else if (state === "speaking") {
     badge.classList.add("speaking");
-    textEl.textContent = customText || "Buddy Speaking";
+    textEl.textContent = customText || "AI Speaking";
   } else if (state === "thinking") {
     badge.classList.add("thinking");
     textEl.textContent = customText || "Thinking…";
@@ -541,7 +541,7 @@ function renderChatFeed() {
 
   feed.innerHTML = liveTranscript.map(entry => `
     <div class="chat-bubble ${entry.speaker === 'you' ? 'you' : 'buddy'}">
-      <span class="bubble-author">${entry.speaker === 'you' ? '👤 You' : '🦉 Interview Buddy'}</span>
+      <span class="bubble-author">${entry.speaker === 'you' ? '👤 You' : '🦉 Interviewest'}</span>
       <span>${esc(entry.text)}</span>
     </div>
   `).join("");
@@ -812,7 +812,7 @@ async function renderHistory() {
           <summary style="cursor: pointer; color: var(--blue); font-weight: 800; padding: 4px 0;">View Full Transcript</summary>
           <div style="background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); margin-top: 8px; display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
             ${(s.transcript || []).map(t => `
-              <div><strong style="color: ${t.speaker === 'you' ? 'var(--blue-shadow)' : 'var(--green-shadow)'};">${t.speaker === 'you' ? 'Candidate' : 'Buddy'}:</strong> ${esc(t.text)}</div>
+              <div><strong style="color: ${t.speaker === 'you' ? 'var(--blue-shadow)' : 'var(--green-shadow)'};">${t.speaker === 'you' ? 'Candidate' : 'Interviewest'}:</strong> ${esc(t.text)}</div>
             `).join('')}
           </div>
         </details>
