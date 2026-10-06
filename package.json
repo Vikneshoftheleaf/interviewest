@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "build": "echo 'Static assets ready in public/'",
     "dev": "wrangler pages dev public --compatibility-date=2025-01-01",
