@@ -125,21 +125,25 @@ Deploy directly to Cloudflare Pages with one command:
 npm run deploy
 ```
 
-Set your production API key secret:
+Set your production API key secret via CLI:
 
 ```bash
-npx wrangler pages secret put GEMINI_API_KEY --project-name interview-buddy
+npx wrangler pages secret put GEMINI_API_KEY --project-name interviewest
 ```
 
-### Option B: Cloudflare Dashboard Git Integration
+### Option B: Cloudflare Dashboard Git Integration (Recommended)
 
-1. Push your repository to GitHub or GitLab.
-2. In Cloudflare Dashboard, navigate to **Compute (Workers) > Pages > Connect to Git**.
-3. Set the build settings:
-   - **Framework preset**: None
+1. Push your repository to GitHub: `git push origin main`
+2. In the [Cloudflare Dashboard](https://dash.cloudflare.com/), navigate to **Workers & Pages > Create application > Pages > Connect to Git**.
+3. Select the **`interviewest`** repository.
+4. Set the build configuration:
+   - **Framework preset**: `None`
+   - **Build command**: `npm run build` (or leave blank)
    - **Build output directory**: `public`
-4. Under **Settings > Environment variables**, add:
+   - **Root directory**: `/` (default)
+5. Under **Environment variables (Production & Preview)**, add:
    - `GEMINI_API_KEY`: `your_gemini_api_key_here`
+6. Click **Save and Deploy**. Cloudflare Pages will automatically deploy your static assets and compile your serverless Functions in `/functions/api`.
 
 ---
 

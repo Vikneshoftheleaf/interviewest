@@ -8,12 +8,34 @@ const TOKEN_ENDPOINTS = [
   "https://generativelanguage.googleapis.com/v1beta/auth_tokens"
 ];
 
+export async function onRequestGet() {
+  return Response.json({
+    status: "ok",
+    endpoint: "/api/token",
+    message: "Interviewest Token Service is operational."
+  });
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+}
+
 export async function onRequestPost({ env }) {
   try {
-    const apiKey = env.GEMINI_API_KEY;
+    const apiKey = (env.GEMINI_API_KEY || env.GOOGLE_API_KEY || env.GEMINI_KEY || "").trim();
     if (!apiKey) {
       return Response.json(
-        { error: "GEMINI_API_KEY is not configured in .dev.vars or environment." },
+        {
+          error: "GEMINI_API_KEY is not configured in Cloudflare Pages environment variables or .dev.vars.",
+          help: "In the Cloudflare Dashboard, go to your Pages project > Settings > Environment variables and add GEMINI_API_KEY."
+        },
         { status: 500 }
       );
     }

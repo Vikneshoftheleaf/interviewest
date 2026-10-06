@@ -119,11 +119,34 @@ async function getCandidateEndpoints(apiKey) {
   return endpoints;
 }
 
+export async function onRequestGet() {
+  return Response.json({
+    status: "ok",
+    endpoint: "/api/structure",
+    message: "Interviewest Structure Parsing Service is operational."
+  });
+}
+
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+}
+
 export async function onRequestPost({ request, env }) {
   try {
-    if (!env.GEMINI_API_KEY) {
+    const apiKey = (env.GEMINI_API_KEY || env.GOOGLE_API_KEY || env.GEMINI_KEY || "").trim();
+    if (!apiKey) {
       return Response.json(
-        { error: "GEMINI_API_KEY is not configured in environment or .dev.vars." },
+        {
+          error: "GEMINI_API_KEY is not configured in Cloudflare Pages environment variables or .dev.vars.",
+          help: "In the Cloudflare Dashboard, go to your Pages project > Settings > Environment variables and add GEMINI_API_KEY."
+        },
         { status: 500 }
       );
     }
@@ -144,7 +167,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     const trimmedText = text.trim().slice(0, 30000);
-    const endpoints = await getCandidateEndpoints(env.GEMINI_API_KEY);
+    const endpoints = await getCandidateEndpoints(apiKey);
     let lastError = null;
 
     for (const url of endpoints) {
@@ -152,7 +175,7 @@ export async function onRequestPost({ request, env }) {
         const res = await fetch(url, {
           method: "POST",
           headers: {
-            "x-goog-api-key": env.GEMINI_API_KEY,
+            "x-goog-api-key": apiKey,
             "Content-Type": "application/json"
           },
           body: JSON.stringify({

@@ -1,11 +1,12 @@
 {
-  "name": "interview-buddy",
+  "name": "interviewest",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "echo 'Static assets ready in public/'",
     "dev": "wrangler pages dev public --compatibility-date=2025-01-01",
-    "deploy": "wrangler pages deploy public --project-name interview-buddy"
+    "deploy": "wrangler pages deploy public --project-name interviewest"
   },
   "dependencies": {
     "@google/genai": "^1.30.0"
