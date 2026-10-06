@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interview Buddy — Playful AI Voice Practice</title>
+  <meta name="description" content="Level up your interview skills with real-time AI voice practice, friendly feedback, and resume hotspot probing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f9fa;
+      --surface: #ffffff;
+      --border: #e5e5e5;
+      --border-dark: #d4d4d4;
+      
+      /* Duolingo signature colors */
+      --green: #58cc02;
+      --green-shadow: #46a302;
+      --green-light: #d7ffb8;
+      
+      --blue: #1cb0f6;
+      --blue-shadow: #1899d6;
+      --blue-light: #ddf4ff;
+      
+      --yellow: #ffc800;
+      --yellow-shadow: #e5a500;
+      --yellow-light: #fff5c0;
+      
+      --red: #ff4b4b;
+      --red-shadow: #ea2b2b;
+      --red-light: #ffdfe0;
+      
+      --purple: #ce82ff;
+      --purple-shadow: #a559d9;
+      --purple-light: #f5e2ff;
+
+      --orange: #ff9600;
+      --orange-shadow: #d97f00;
+      --orange-light: #ffe5bf;
+      
+      --text: #3c3c3c;
+      --text-secondary: #777777;
+      --text-mute: #a0a0a0;
+      
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 24px;
+      --radius-full: 9999px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: calc(100vh - 32px);
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px 22px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      border-radius: var(--radius-lg);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--green);
+      border-bottom: 4px solid var(--green-shadow);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 22px;
+    }
+
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--green);
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-mute);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Status Pill */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 800;
+      background: #f0f0f0;
+      border: 2px solid var(--border);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+
+    .status-badge.live {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green-shadow);
+    }
+
+    .status-badge.speaking {
+      background: var(--yellow-light);
+      border-color: var(--yellow);
+      color: var(--yellow-shadow);
+    }
+
+    .status-badge.thinking {
+      background: var(--purple-light);
+      border-color: var(--purple);
+      color: var(--purple-shadow);
+    }
+
+    .status-badge.muted {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red-shadow);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-badge.live .status-dot {
+      animation: bounce-dot 1.2s infinite ease-in-out;
+    }
+
+    @keyframes bounce-dot {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      background: #eef2f5;
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+    }
+
+    .tab-btn {
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--blue);
+      border-bottom: 3px solid var(--blue-shadow);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Main Container */
+    main {
+      display: grid;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .tab-content {
+      display: none;
+      gap: 16px;
+    }
+
+    .tab-content.active {
+      display: grid;
+    }
+
+    /* Card Component */
+    .card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 5px solid var(--border-dark);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Buttons: Duolingo 3D Chunky Style */
+    button {
+      font-family: inherit;
+      font-weight: 800;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      transition: transform 0.1s ease, border-bottom-width 0.1s ease, filter 0.15s ease;
+      user-select: none;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-green {
+      background: var(--green);
+      border-color: var(--green);
+      border-bottom: 5px solid var(--green-shadow);
+      color: white;
+      padding: 14px 32px;
+      font-size: 1.05rem;
+    }
+
+    .btn-green:hover:not(:disabled) {
+      filter: brightness(1.06);
+    }
+
+    .btn-green:active:not(:disabled) {
+      transform: translateY(3px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-red {
+      background: var(--red);
+      border-color: var(--red);
+      border-bottom: 5px solid var(--red-shadow);
+      color: white;
+      padding: 14px 28px;
+      font-size: 1rem;
+    }
+
+    .btn-red:hover {
+      filter: brightness(1.06);
+    }
+
+    .btn-red:active {
+      transform: translateY(3px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-blue {
+      background: var(--blue);
+      border-color: var(--blue);
+      border-bottom: 4px solid var(--blue-shadow);
+      color: white;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+    }
+
+    .btn-blue:hover:not(:disabled) {
+      filter: brightness(1.06);
+    }
+
+    .btn-blue:active:not(:disabled) {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-gray {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      color: var(--text);
+      padding: 10px 18px;
+      font-size: 0.9rem;
+    }
+
+    .btn-gray:hover:not(:disabled) {
+      background: #f7f9fa;
+    }
+
+    .btn-gray:active:not(:disabled) {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-icon {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      color: var(--text);
+    }
+
+    .btn-icon:hover:not(:disabled) {
+      background: #f7f9fa;
+    }
+
+    .btn-icon:active:not(:disabled) {
+      transform: translateY(2px);
+      border-bottom-width: 2px;
+    }
+
+    .btn-icon.active {
+      background: var(--red-light);
+      border-color: var(--red);
+      border-bottom-color: var(--red-shadow);
+      color: var(--red);
+    }
+
+    /* Top Setup Bar (Persona & Voice) */
+    .setup-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      background: #f2f5f7;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+    }
+
+    .setup-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setup-item label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select {
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border);
+      border-bottom: 3px solid var(--border-dark);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:focus {
+      border-color: var(--blue);
+      border-bottom-color: var(--blue-shadow);
+    }
+
+    /* Studio Voice Visualizer */
+    .visualizer-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 5px solid var(--border-dark);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+    }
+
+    .orb-wrapper {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 100%;
+      max-width: 260px;
+      aspect-ratio: 1;
+    }
+
+    canvas#orb {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Mode selector bar */
+    .mode-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .mode-pill {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mode-pill:hover {
+      background: #f7f9fa;
+      color: var(--text);
+    }
+
+    .mode-pill.active {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      border-bottom-color: var(--blue-shadow);
+      color: var(--blue-shadow);
+    }
+
+    /* Call Action Bar */
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* Single Clean Live Conversation Feed */
+    .conversation-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 5px solid var(--border-dark);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .conversation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .conversation-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .chat-bubble {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.45;
+      animation: pop-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pop-in {
+      0% { opacity: 0; transform: scale(0.95) translateY(6px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .chat-bubble.buddy {
+      align-self: flex-start;
+      background: #f0fdf4;
+      border: 2px solid #bbf7d0;
+      border-bottom: 4px solid #86efac;
+      color: #14532d;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-bubble.you {
+      align-self: flex-end;
+      background: var(--blue-light);
+      border: 2px solid #bae6fd;
+      border-bottom: 4px solid #7dd3fc;
+      color: #0369a1;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble-author {
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.8;
+    }
+
+    /* Resume Management Grid */
+    .resume-gallery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .resumes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .resume-box {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .resume-box:hover {
+      border-color: var(--blue);
+      border-bottom-color: var(--blue-shadow);
+      transform: translateY(-2px);
+    }
+
+    .resume-box.selected {
+      background: var(--blue-light);
+      border-color: var(--blue);
+      border-bottom-color: var(--blue-shadow);
+    }
+
+    .resume-box-badge {
+      display: inline-block;
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      background: #e2e8f0;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .resume-box.selected .resume-box-badge {
+      background: var(--blue);
+      color: white;
+    }
+
+    .resume-box-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .resume-box-role {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+
+    /* Upload dropzone */
+    .dropzone {
+      border: 3px dashed #cbd5e1;
+      border-radius: var(--radius-lg);
+      padding: 28px 16px;
+      text-align: center;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dropzone:hover, .dropzone.over {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    /* Detailed Resume Inspector Drawer */
+    .inspector-panel {
+      background: #ffffff;
+      border: 2px solid var(--blue);
+      border-bottom: 5px solid var(--blue-shadow);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: pop-in 0.25s ease;
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-pill {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-bottom: 2px solid #94a3b8;
+      color: #334155;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .hotspot-box {
+      background: var(--yellow-light);
+      border: 2px solid var(--yellow);
+      border-bottom: 4px solid var(--yellow-shadow);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #78350f;
+    }
+
+    /* History List */
+    .history-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-card-item {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .history-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      background: var(--green-light);
+      color: var(--green-shadow);
+    }
+
+    /* Client Storage Utilization Card (Duolingo Style) */
+    .storage-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-bottom: 4px solid var(--border-dark);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .storage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .storage-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .storage-icon {
+      font-size: 24px;
+    }
+
+    .storage-stats-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .storage-pill {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-bottom: 2px solid var(--border-dark);
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .storage-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .storage-bar-track {
+      width: 100%;
+      height: 14px;
+      background: #e2e8f0;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .storage-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      min-width: 4px;
+    }
+
+    .storage-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* Toast Notification */
+    #msg {
+      text-align: center;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      min-height: 1.4em;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 10px; }
+      header { padding: 12px 16px; }
+      .card { padding: 16px 14px; }
+      .brand h1 { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🦉</div>
+        <div>
+          <h1>Interview Buddy</h1>
+          <span>AI Voice Practice</span>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div id="statusBadge" class="status-badge">
+          <span class="status-dot"></span>
+          <span id="statusText">Ready</span>
+        </div>
+
+        <nav class="nav-tabs">
+          <button id="tabLiveBtn" class="tab-btn active" onclick="switchTab('live')">🎙️ Studio</button>
+          <button id="tabResumeBtn" class="tab-btn" onclick="switchTab('resumes')">📄 Resumes</button>
+          <button id="tabHistoryBtn" class="tab-btn" onclick="switchTab('history')">🏆 History</button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+      <!-- TAB 1: Studio (Voice Practice) -->
+      <section id="tabLive" class="tab-content active">
+        <!-- Setup Bar: Active Resume & Voice Personas -->
+        <div class="setup-bar">
+          <div class="setup-item">
+            <label for="selResume">Active Resume</label>
+            <select id="selResume" aria-label="Active resume"></select>
+          </div>
+
+          <div class="setup-item">
+            <label for="selPersona">Interviewer Persona</label>
+            <select id="selPersona">
+              <option value="friendly">🤝 Friendly Coach & Peer</option>
+              <option value="senior">💼 Senior Hiring Manager</option>
+              <option value="tech">💻 Tough Tech Lead</option>
+              <option value="hr">📋 Behavioral Recruiter</option>
+            </select>
+          </div>
+
+          <div class="setup-item">
+            <label for="selVoice">AI Voice</label>
+            <select id="selVoice">
+              <option value="Puck">Puck (Energetic & Friendly)</option>
+              <option value="Aoede">Aoede (Clear & Professional)</option>
+              <option value="Charon">Charon (Calm & Senior)</option>
+              <option value="Fenrir">Fenrir (Direct & Confident)</option>
+              <option value="Kore">Kore (Warm & Natural)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Visualizer Card -->
+        <div class="visualizer-card">
+          <!-- Voice Visualizer Canvas -->
+          <div class="orb-wrapper">
+            <canvas id="orb" width="520" height="520"></canvas>
+          </div>
+
+          <!-- Practice Mode Selector -->
+          <div class="mode-pills">
+            <button class="mode-pill active" data-mode="chat" onclick="setInterviewMode('chat')">💬 Warmup Chat</button>
+            <button class="mode-pill" data-mode="interview" onclick="setInterviewMode('interview')">🎯 Mock Interview</button>
+            <button class="mode-pill" data-mode="coach" onclick="setInterviewMode('coach')">💡 Instant Coaching</button>
+            <button class="mode-pill" data-mode="grill" onclick="setInterviewMode('grill')">🔥 Hard Probing</button>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="actions-bar">
+            <button id="start" class="btn-green">
+              ▶ START PRACTICE
+            </button>
+            
+            <button id="muteBtn" class="btn-icon" title="Toggle Mute (Space)" hidden>
+              <span id="micEmoji">🎙️</span>
+            </button>
+
+            <button id="end" class="btn-red" hidden>
+              ⏹ END SESSION
+            </button>
+          </div>
+        </div>
+
+        <!-- Single Live Conversation Dialog Feed -->
+        <div class="conversation-card">
+          <div class="conversation-header">
+            <div class="conversation-title">
+              <span>💬 Live Conversation Feed</span>
+            </div>
+            <button class="btn-gray" style="padding: 6px 12px; font-size: 0.8rem;" onclick="copyLiveTranscript()">📋 Copy</button>
+          </div>
+          <div id="transcriptFeed" class="chat-feed">
+            <div style="color: var(--text-mute); font-weight: 700; text-align: center; padding: 24px;">
+              Your conversation will appear here in real-time as you speak…
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: Resume Gallery & Hotspot Inspector -->
+      <section id="tabResumes" class="tab-content">
+        <div class="card">
+          <!-- Upload Dropzone -->
+          <div class="dropzone" id="drop" tabindex="0">
+            <div style="font-size: 36px;">📁</div>
+            <div style="font-weight: 900; font-size: 1.1rem; color: var(--text);">Drop a resume here or click to upload</div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-secondary);">Supports PDF, DOCX, TXT, MD</div>
+          </div>
+          <input id="file" type="file" accept=".pdf,.docx,.txt,.md" hidden>
+
+          <!-- Gallery of Uploaded Resumes -->
+          <div class="resume-gallery-header">
+            <h2 style="font-size: 1.15rem; font-weight: 900;">Uploaded Resumes (<span id="resumeCount">0</span>)</h2>
+          </div>
+
+          <div id="resumesGrid" class="resumes-grid">
+            <p style="color: var(--text-mute); font-weight: 700;">No resumes uploaded yet. Upload one above!</p>
+          </div>
+
+          <!-- Selected Resume Inspector -->
+          <div id="resumeInspector" class="inspector-panel" hidden>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <h3 id="inspectLabel" style="font-size: 1.25rem; font-weight: 900; color: var(--blue-shadow);">Resume Title</h3>
+                <p id="inspectRole" style="font-size: 0.9rem; font-weight: 800; color: var(--text-secondary);">Target Role: General</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button id="setActiveBtn" class="btn-blue" style="padding: 8px 14px; font-size: 0.8rem;">⭐ Use For Practice</button>
+                <button id="delResumeBtn" class="btn-red" style="padding: 8px 14px; font-size: 0.8rem;">🗑️ Delete</button>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.85rem; font-weight: 900; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 4px;">Summary</h4>
+              <p id="inspectSummary" style="font-size: 0.92rem; font-weight: 600; background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);"></p>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.85rem; font-weight: 900; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 6px;">Skills Identified</h4>
+              <div id="inspectSkills" class="tags-container"></div>
+            </div>
+
+            <div>
+              <h4 style="font-size: 0.85rem; font-weight: 900; color: var(--orange-shadow); text-transform: uppercase; margin-bottom: 6px;">🔥 Interview Hotspots & Probe Areas</h4>
+              <div id="inspectHotspots" style="display: grid; gap: 8px;"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: History & Past Sessions -->
+      <section id="tabHistory" class="tab-content">
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 1.15rem; font-weight: 900;">Practice History</h2>
+            <button id="clearHistoryBtn" class="btn-gray" style="font-size: 0.8rem; padding: 6px 12px;">Clear All</button>
+          </div>
+
+          <div id="historyList" class="history-grid">
+            <p style="color: var(--text-mute); font-weight: 700; text-align: center; padding: 32px;">No sessions completed yet. Practice in the Studio tab!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Client Storage Utilization Footer (Always visible across all tabs) -->
+      <footer class="storage-card">
+        <div class="storage-header">
+          <div class="storage-title">
+            <span class="storage-icon">💾</span>
+            <div>
+              <div style="font-weight: 900; font-size: 0.95rem; color: var(--text);">Browser Storage Utilization</div>
+              <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary);">100% Client-Side Privacy · IndexedDB & Local Cache</div>
+            </div>
+          </div>
+          <div class="storage-stats-pills">
+            <span id="storageResumeCountPill" class="storage-pill">📄 0 Resumes</span>
+            <span id="storageSessionCountPill" class="storage-pill">🏆 0 Sessions</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar (Duolingo Style 3D Track) -->
+        <div class="storage-bar-wrapper">
+          <div class="storage-bar-track">
+            <div id="storageBarFill" class="storage-bar-fill" style="width: 0%;"></div>
+          </div>
+          <div class="storage-bar-labels">
+            <span id="storageUsageText" style="font-weight: 800; color: var(--text);">Calculating usage…</span>
+            <span id="storageLimitText" style="font-weight: 800; color: var(--text-secondary);">Quota: Checking…</span>
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Global Toast / Message -->
+    <p id="msg"></p>
+  </div>
+
+  <!-- Third-party parsers: PDF.js & Mammoth for DOCX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
